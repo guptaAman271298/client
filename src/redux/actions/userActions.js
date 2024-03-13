@@ -1,14 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchUserData = createAsyncThunk("fetchUserData", async () => {
-  const res = await fetch("http://localhost:3000/admin/user/get");
+  const res = await fetch("https://server-vtmg.onrender.com/admin/user/get");
   return res.json();
 });
 
 export const createUserData = createAsyncThunk(
   "createUserData",
   async (data) => {
-    const res = await fetch("http://localhost:3000/admin/user/create", {
+    const res = await fetch("https://server-vtmg.onrender.com/admin/user/create", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -23,7 +23,7 @@ export const updateUserData = createAsyncThunk(
   "updateUserData",
   async ({ userId, data }) => {
     const res = await fetch(
-      `http://localhost:3000/admin/user/update/${userId}`,
+      `https://server-vtmg.onrender.com/admin/user/update/${userId}`,
       {
         method: "put",
         headers: {
@@ -38,7 +38,7 @@ export const updateUserData = createAsyncThunk(
 export const deleteUserData = createAsyncThunk(
   "deleteUserData",
   async (userId) => {
-    await fetch(`http://localhost:3000/admin/user/delete/${userId}`, {
+    await fetch(`https://server-vtmg.onrender.com/admin/user/delete/${userId}`, {
       method: "delete",
     });
     return userId;
