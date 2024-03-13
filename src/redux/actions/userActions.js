@@ -6,22 +6,18 @@ export const fetchUserData = createAsyncThunk("fetchUserData", async () => {
 });
 
 export const createUserData = createAsyncThunk(
-    "createUserData",
-    async (data) => {
-      const res = await fetch("http://localhost:3000/admin/user/create", {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      console.log(res)
-      if (!res.ok) { // Check if the response is not successful
-        throw new Error("Failed to create user"); // Throw an error
-      }
-      return res.json();
-    }
-  );
+  "createUserData",
+  async (data) => {
+    const res = await fetch("http://localhost:3000/admin/user/create", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  }
+);
 
 export const updateUserData = createAsyncThunk(
   "updateUserData",
