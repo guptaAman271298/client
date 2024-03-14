@@ -4,15 +4,27 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserData } from "../redux/actions/userActions";
 import { reset } from "../redux/slices/userSlice";
+import toast from "react-hot-toast";
+import Paginate from "./Paginate";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { users, isLoading, loadingError, isLoadingSuccess } = useSelector((state) => state.user);
+  const { users, isLoading, loadingError, isLoadingSuccess, deletingError, isDeletingSuccess } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   useEffect(() => {
       dispatch(fetchUserData());
   }, []);
+
+  useEffect(() => {
+    if (deletingError) {
+      toast.error(deletingError?.data?.message);
+    }
+    if (isDeletingSuccess) {
+      toast.success("Deleted successfully")
+    }
+    dispatch(reset())
+  }, [deletingError, isDeletingSuccess]);
 
   useEffect(() => {
     if (isLoadingSuccess) {
@@ -36,10 +48,10 @@ const Home = () => {
       </div>
     );
 
-  if (loadingError && 'data' in loadingError)
+  if (loadingError)
     return (
       <div class="alert alert-danger m-2" role="alert">
-        Some Error Happened!!
+        { loadingError }
       </div>
     );
 
@@ -52,7 +64,10 @@ const Home = () => {
         </button>
       </div>
       {users?.length ? (
-        <Table allUsers={users}/>
+        <>
+            <Table allUsers={users}/>
+            <Paginate />
+        </>
       ) : (
         <div class="alert alert-info" role="alert">
           No Data Found!!

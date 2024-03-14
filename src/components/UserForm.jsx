@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
-import { FormValidation } from "../form_validation";
+import formValidation from "../utils/formValidation";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { reset } from "../redux/slices/userSlice";
@@ -35,7 +35,7 @@ const UserForm = ({
     handleSubmit,
   } = useFormik({
     initialValues,
-    validationSchema: FormValidation,
+    validationSchema: formValidation,
     onSubmit: (values) => {
       if (type === "create") {
         onDataSubmit(values);
@@ -47,8 +47,7 @@ const UserForm = ({
 
   useEffect(() => {
     if (error) {
-      console.log(error)
-      toast.error(error?.data?.message);
+      toast.error(error);
     }
     if (isSuccess) {
       if (type === "create") {
@@ -56,8 +55,9 @@ const UserForm = ({
       } else {
         toast.success("Updated successfully");
       }
-      dispatch(reset())
+      navigate("/")
     }
+    dispatch(reset())
   }, [error, isSuccess]);
 
   return (
@@ -66,12 +66,6 @@ const UserForm = ({
       style={{ minHeight: "100vh" }}
     >
       <form className="w-50" onSubmit={handleSubmit}>
-        <div className="d-flex mb-3 align-items-center justify-content-end">
-          <button type="button" className="btn btn-success" onClick={() => navigate("/")}>
-            Back to home
-          </button>
-        </div>
-        <div className="border p-3">
           <h2 className="my-4">{title}</h2>
           <div className="mb-3">
             <label for="name" className="form-label">
@@ -137,7 +131,6 @@ const UserForm = ({
               <b>{title}</b>
             )}
           </button>
-        </div>
       </form>
     </div>
   );
