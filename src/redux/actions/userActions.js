@@ -2,9 +2,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchUserData = createAsyncThunk(
   "fetchUserData",
-  async (pageNo = 1, keyword = "", { rejectWithValue }) => {
+  async (pageNo = 1, { rejectWithValue }) => {
     try {
-      const res = await fetch(`https://server-vtmg.onrender.com/admin/user/get?pageNo=${pageNo}&keyword=${keyword}`);
+      const res = await fetch(`https://server-vtmg.onrender.com/admin/user/get?pageNo=${pageNo}`);
       const result = await res.json();
       if (!res.ok) throw new Error(result?.message)
       return result;
