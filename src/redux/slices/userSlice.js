@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  changeUserStatus,
   createUserData,
   deleteUserData,
   fetchUserData,
@@ -11,17 +12,22 @@ const initialState = {
   isUpdating: false,
   isCreating: false,
   isDeleting: false,
+  isChangingStatus: false,
   isLoadingSuccess: false,
   isUpdatingSuccess: false,
   isCreatingSuccess: false,
   isDeletingSuccess: false,
+  isStatusChanged: false,
   loadingError: '',
   creatingError: '',
   updatingError: '',
   deletingError: '',
+  statusChangedError: '',
   pageNo: 1,
   pages: null,
   users: [],
+  totalCount: null, 
+  disable: false
 };
 
 const userSlice = createSlice({
@@ -41,7 +47,14 @@ const userSlice = createSlice({
       state.isLoading = false;
       state.isLoadingSuccess = false;
       state.loadingError = '';
+      state.isChangingStatus = false;
+      state.isStatusChanged = false;
+      state.statusChangedError = '';
+      state.disable = false
     },
+    setAllDisable: (state, action) => {
+      state.disable = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserData.pending, (state, action) => {
@@ -54,6 +67,7 @@ const userSlice = createSlice({
       state.users = action.payload.users;
       state.pageNo = action.payload.pageNo;
       state.pages = action.payload.pages;
+      state.totalCount = action.payload.totalCount;
     });
     builder.addCase(fetchUserData.rejected, (state, action) => {
       state.isLoading = false;
@@ -101,8 +115,21 @@ const userSlice = createSlice({
       state.isDeleting = false;
       state.deletingError = action.payload;
     });
+    builder.addCase(changeUserStatus.pending, (state, action) => {
+      state.isChangingStatus = true;
+    });
+    builder.addCase(changeUserStatus.fulfilled, (state, action) => {
+      state.isChangingStatus = false;
+      state.statusChangedError = "";
+      state.isStatusChanged = true;
+      state.users = state.users.map((item) => item._id === action.payload ? { ...item, isActive: !item.isActive } : item);
+    });
+    builder.addCase(changeUserStatus.rejected, (state, action) => {
+      state.isChangingStatus = false;
+      state.statusChangedError = action.payload;
+    });
   },
 });
 
-export const { reset } = userSlice.actions;
+export const { reset, setAllDisable } = userSlice.actions;
 export default userSlice.reducer;

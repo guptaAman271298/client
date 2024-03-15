@@ -1,34 +1,44 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUserData } from "../redux/actions/userActions";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
-const Paginate = () => {
-  const { users, pages, pageNo } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
-
-  const handleNavigation = (pageNumber) => {
-    dispatch(fetchUserData(pageNumber));
-  };
+const Paginate = ({ pageNumber }) => {
+  const { pages, pageNo, disable } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   return (
     <nav aria-label="Page navigation example">
       <ul className="pagination justify-content-center">
-        <li className="page-item disabled">
-          <a className="page-link">Previous</a>
+        <li className="page-item">
+          <button
+            className="page-link"
+            onClick={() => navigate(`/page/${pageNo - 1}`)}
+            disabled={pageNumber <= 1 || disable}
+          >
+            Previous
+          </button>
         </li>
         {Array(pages)
           .fill(undefined)
           ?.map((_, ind) => (
             <li className="page-item">
-              <button className="page-link" onClick={() => handleNavigation(ind + 1)}>
+              <button
+                className="page-link"
+                disabled={disable}
+                onClick={() => navigate(`/page/${ind + 1}`)}
+              >
                 {ind + 1}
               </button>
             </li>
           ))}
         <li className="page-item">
-          <a className="page-link" href="#">
+          <button
+            className="page-link"
+            onClick={() => navigate(`/page/${pageNo + 1}`)}
+            disabled={pageNumber >= pages || disable}
+          >
             Next
-          </a>
+          </button>
         </li>
       </ul>
     </nav>

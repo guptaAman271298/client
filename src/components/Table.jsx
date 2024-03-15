@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deleteUserData } from "../redux/actions/userActions";
+import { changeUserStatus, deleteUserData } from "../redux/actions/userActions";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { CgDetailsMore } from "react-icons/cg";
 import { formatDate, formatTime } from "../utils/dateTimeFormatter";
+import { setAllDisable } from "../redux/slices/userSlice";
 
 const Table = ({ allUsers: data }) => {
   const [id, setId] = useState("");
-  const [allDisable, setAllDisable] = useState(false);
+  const { disable } = useSelector(state => state.user)
   const [selectedProfile, setSelectedProfile] = useState(null);
   const {
     isDeleting: isLoading,
@@ -21,7 +22,7 @@ const Table = ({ allUsers: data }) => {
 
   const handleDeleteUser = (id) => {
     setId(id);
-    setAllDisable(true);
+    dispatch(setAllDisable(true));
     dispatch(deleteUserData(id));
   };
 
@@ -30,10 +31,14 @@ const Table = ({ allUsers: data }) => {
     setSelectedProfile(user);
   };
 
+  const handleChangeStatus = (id) => {
+    dispatch(setAllDisable(true));
+    dispatch(changeUserStatus(id));
+  }
+
   useEffect(() => {
     if (isDeletingSuccess) {
       setId("");
-      setAllDisable(false);
     }
   }, [isDeletingSuccess]);
 
@@ -44,7 +49,7 @@ const Table = ({ allUsers: data }) => {
           <th scope="col">ID</th>
           <th scope="col">Name</th>
           <th scope="col">Email</th>
-          <th scope="col">Is Active</th>
+          <th scope="col">Status</th>
           <th scope="col">Actions</th>
         </tr>
       </thead>
@@ -55,7 +60,22 @@ const Table = ({ allUsers: data }) => {
               <th scope="row">{ind + 1}</th>
               <td>{user?.name}</td>
               <td>{user?.email}</td>
-              <td>{user?.isActive ? "Active" : "Inactive"}</td>
+              <td>
+              <div className="form-check form-switch">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="isactive"
+              name="isActive"
+              checked={user?.isActive}
+              onChange={() => handleChangeStatus(user._id)}
+            />
+            <label className="form-check-label" htmlFor="isactive">
+              <b>{user?.isActive ? "Active" : "Inactive"}</b>
+            </label>
+          </div>
+              </td>
               <td className="d-flex align-items-center">
                 <div className="dropdown">
                   <div
@@ -72,7 +92,7 @@ const Table = ({ allUsers: data }) => {
                       <button
                         className="btn btn-sm btn-light w-100 text-start"
                         onClick={() => handleDeleteUser(user?._id)}
-                        disabled={allDisable || (isLoading && id === user._id)}
+                        disabled={disable}
                       >
                         {isLoading && id === user._id ? (
                           <div>
@@ -89,7 +109,7 @@ const Table = ({ allUsers: data }) => {
                       <button
                         className="btn btn-sm btn-light w-100 text-start"
                         onClick={() => navigate(`/update/${user?._id}`)}
-                        disabled={allDisable}
+                        disabled={disable}
                       >
                         <>
                           <FaEdit /> {"Edit"}
@@ -102,6 +122,7 @@ const Table = ({ allUsers: data }) => {
                         onClick={() => handleSelectButton(user?._id)}
                         data-bs-toggle="modal"
                         data-bs-target="#exampleModal"
+                        disabled={disable}
                       >
                         <>
                           <CgDetailsMore /> {"Details"}

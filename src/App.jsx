@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import store from "./redux/store";
+import Navbar from "./components/Navbar";
 
 const Layout = () => {
 
@@ -15,6 +16,7 @@ const Layout = () => {
   return (
     <Provider store={store}>
       <PersistGate persistor={persister}>
+        <Navbar />
         <Outlet />
         <Toaster />
       </PersistGate>
@@ -30,6 +32,10 @@ const appRouter = createBrowserRouter([
     children: [
       {
         path: '/',
+        element: <Home />
+      },
+      {
+        path: '/page/:pageNo',
         element: <Home />
       },
       {

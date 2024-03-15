@@ -1,4 +1,6 @@
-
+.disabled-link {
+    pointer-events: none;
+  }
 
 .dropdown-toggle::after { 
     content: none; 

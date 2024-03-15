@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Table from "./Table";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchUserData } from "../redux/actions/userActions";
 import { reset } from "../redux/slices/userSlice";
 import toast from "react-hot-toast";
@@ -9,28 +9,57 @@ import Paginate from "./Paginate";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { users, isLoading, loadingError, isLoadingSuccess, deletingError, isDeletingSuccess } = useSelector((state) => state.user);
+  const {
+    users,
+    isLoading,
+    loadingError,
+    isLoadingSuccess,
+    deletingError,
+    isDeletingSuccess,
+    totalCount,
+    pages,
+    isStatusChanged,
+    statusChangedError,
+  } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const { pageNo } = useParams();
 
   useEffect(() => {
+    if (totalCount && pageNo) {
+      dispatch(fetchUserData(pageNo));
+    } else {
       dispatch(fetchUserData());
-  }, []);
+    }
+  }, [pageNo, totalCount, isDeletingSuccess]);
 
   useEffect(() => {
     if (deletingError) {
-      toast.error(deletingError?.data?.message);
+      toast.error(deletingError);
     }
     if (isDeletingSuccess) {
-      toast.success("Deleted successfully")
+      toast.success("Deleted successfully");
+      if (!users.length && pageNo > 1) {
+        navigate(`/page/${pageNo - 1}`);
+      }
     }
-    dispatch(reset())
+    dispatch(reset());
   }, [deletingError, isDeletingSuccess]);
 
   useEffect(() => {
-    if (isLoadingSuccess) {
-      dispatch(reset())
+    if (statusChangedError) {
+      toast.error(statusChangedError);
     }
-  }, [isLoadingSuccess])
+    if (isStatusChanged) {
+      toast.success("Status changed successfully");
+    }
+    dispatch(reset());
+  }, [statusChangedError, isStatusChanged]);
+
+  useEffect(() => {
+    if (isLoadingSuccess) {
+      dispatch(reset());
+    }
+  }, [isLoadingSuccess]);
 
   if (isLoading)
     return (
@@ -51,26 +80,25 @@ const Home = () => {
   if (loadingError)
     return (
       <div class="alert alert-danger m-2" role="alert">
-        { loadingError }
+        {loadingError}
       </div>
     );
 
   return (
     <div className="container">
-      <h1 className="my-5">User Data:({users?.length})</h1>
-      <div className="d-flex mb-3 align-items-center justify-content-end">
-        <button className="btn btn-success" onClick={() => navigate("/create")}>
-          Create User
-        </button>
-      </div>
+      <h2 className="my-3">User Data</h2>
       {users?.length ? (
         <>
-            <Table allUsers={users}/>
-            <Paginate />
+          <Table allUsers={users} />
         </>
       ) : (
         <div class="alert alert-info" role="alert">
           No Data Found!!
+        </div>
+      )}
+      {pages > 1 && (
+        <div className="position-absolute bottom-0 py-3">
+          <Paginate pageNumber={pageNo} />
         </div>
       )}
     </div>
