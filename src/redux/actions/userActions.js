@@ -4,7 +4,7 @@ export const fetchUserData = createAsyncThunk(
   "fetchUserData",
   async (pageNo = 1, keyword = "", { rejectWithValue }) => {
     try {
-      const res = await fetch(`http://localhost:3000/admin/user/get?pageNo=${pageNo}&keyword=${keyword}`);
+      const res = await fetch(`https://server-vtmg.onrender.com/admin/user/get?pageNo=${pageNo}&keyword=${keyword}`);
       const result = await res.json();
       if (!res.ok) throw new Error(result?.message)
       return result;
@@ -18,7 +18,7 @@ export const createUserData = createAsyncThunk(
   "createUserData",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await fetch("http://localhost:3000/admin/user/create", {
+      const res = await fetch("https://server-vtmg.onrender.com/admin/user/create", {
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export const updateUserData = createAsyncThunk(
   async ({ userId, data }, { rejectWithValue }) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/admin/user/update/${userId}`,
+        `https://server-vtmg.onrender.com/admin/user/update/${userId}`,
         {
           method: "put",
           headers: {
@@ -62,7 +62,7 @@ export const deleteUserData = createAsyncThunk(
   "deleteUserData",
   async (userId, { rejectWithValue }) => {
     try {
-      const res = await fetch(`http://localhost:3000/admin/user/delete/${userId}`, {
+      const res = await fetch(`https://server-vtmg.onrender.com/admin/user/delete/${userId}`, {
         method: "delete",
       });
       if (!res.ok) throw new Error(result?.message)
@@ -77,7 +77,7 @@ export const changeUserStatus = createAsyncThunk(
   "changedUserStatus",
   async (userId, { rejectWithValue }) => {
     try {
-      const res = await fetch(`http://localhost:3000/admin/user/change/${userId}`, {
+      const res = await fetch(`https://server-vtmg.onrender.com/admin/user/change/${userId}`, {
         method: "put",
       });
       if (!res.ok) throw new Error(result?.message)
